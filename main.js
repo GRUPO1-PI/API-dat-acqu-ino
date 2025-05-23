@@ -61,12 +61,32 @@ const serial = async (
         // insere os dados no banco de dados (se habilitado)
         if (HABILITAR_OPERACAO_INSERIR) {
 
+
+            for (var i = 1; i <= 8; i++) {
+                
+
+                if ((Math.round(Math.random())) == 0) {
+
+                    await poolBancoDados.execute(
+                        `INSERT INTO monitoramento (fkSensor, produtoDetectado) VALUES (${i}, ?)`,
+                        [sensorDigital]
+                    );
+                    console.log("valores inseridos no banco: " + sensorDigital);
+                    
+                }
+                else if ((Math.round(Math.random())) == 1) {
+                    
+                    await poolBancoDados.execute(
+                        `INSERT INTO monitoramento (fkSensor, produtoDetectado) VALUES (${i}, ?)`,
+                        [sensorDigital]
+                    );
+                    console.log("valores inseridos no banco: " + sensorDigital);
+                    
+                }
+
+
+            }
             // este insert irá inserir os dados na tabela "medida"
-            await poolBancoDados.execute(
-                'INSERT INTO monitoramento (fkSensor, alinhamento) VALUES (1, ?)',
-                [sensorDigital]
-            );
-            console.log("valores inseridos no banco: " + sensorDigital);
 
         }
 
