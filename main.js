@@ -10,6 +10,8 @@ const SERVIDOR_PORTA = 3300;
 // habilita ou desabilita a inserção de dados no banco de dados
 const HABILITAR_OPERACAO_INSERIR = true;
 
+var count = 1;
+
 // função para comunicação serial
 const serial = async (
     valoresSensorAnalogico,
@@ -19,7 +21,7 @@ const serial = async (
     // conexão com o banco de dados MySQL
     let poolBancoDados = mysql.createPool(
         {
-            host: 'localhost',
+            host: '10.18.32.105',
             user: 'aluno',
             password: 'Sptech#2024',
             database: 'sonicorp',
@@ -59,36 +61,44 @@ const serial = async (
         valoresSensorDigital.push(sensorDigital);
 
         // insere os dados no banco de dados (se habilitado)
+
+
+
         if (HABILITAR_OPERACAO_INSERIR) {
 
-
-            for (var i = 1; i <= 8; i++) {
-                
-
-                if ((Math.round(Math.random())) == 0) {
-
-                    await poolBancoDados.execute(
-                        `INSERT INTO monitoramento (fkSensor, produtoDetectado) VALUES (${i}, ?)`,
-                        [sensorDigital]
-                    );
-                    console.log("valores inseridos no banco: " + sensorDigital);
-                    
-                }
-                else if ((Math.round(Math.random())) == 1) {
-                    
-                    await poolBancoDados.execute(
-                        `INSERT INTO monitoramento (fkSensor, produtoDetectado) VALUES (${i}, ?)`,
-                        [sensorDigital]
-                    );
-                    console.log("valores inseridos no banco: " + sensorDigital);
-                    
-                }
-
-
+            if (count > 192) {
+                count = 1;
             }
-            // este insert irá inserir os dados na tabela "medida"
+            var valor = Math.round(Math.random()) * 15;
+            if (valor < 12) {
+                valor = 0
+            } else {
+                valor = 1
+            }
 
+            // count = 1;
+            // este insert irá inserir os dados na tabela "medida"
+            if (count == 1) {
+                await poolBancoDados.execute(
+                    `INSERT INTO monitoramento (produtoDetectado, fkSensor) VALUES (?, 1)`,
+                    [sensorDigital]
+                );
+                count++
+                
+            } else {
+                await poolBancoDados.execute(
+                    `INSERT INTO monitoramento (produtoDetectado, fkSensor) VALUES (?, ${count})`,
+                    [valor]
+                );
+                count++
+            }
+            console.log("valores inseridos no banco: " + " + sensorDigital, " + "no sensor: " + count);
+
+            // count vai inserir na fk1, 2, 3, 4 até chegar em 192, quando chegar em 192 reseta, só ajustar isso pra fazer de forma aleatória ou assim mesmo, mas ai vocês diminuem o tempo que o senhor captura os dado, bota pra sei la 0.05 segundos cada captura que ai vai inserir em 20 sensores por segundo
         }
+        // este insert irá inserir os dados na tabela "medida"
+
+
 
     });
 
