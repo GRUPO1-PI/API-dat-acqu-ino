@@ -21,7 +21,7 @@ const serial = async (
     // conexão com o banco de dados MySQL
     let poolBancoDados = mysql.createPool(
         {
-            host: '10.18.32.105',
+            host: 'localhost',
             user: 'aluno',
             password: 'Sptech#2024',
             database: 'sonicorp',
@@ -69,13 +69,16 @@ const serial = async (
             if (count > 192) {
                 count = 1;
             }
-            var valor = Math.round(Math.random()) * 15;
-            if (valor < 12) {
-                valor = 0
-            } else {
+            var valor = Math.round(Math.random() * 1000) ;
+            if (valor <= 1) {
                 valor = 1
+            } else {
+                valor = 0
             }
 
+            // console.log(sensorDigital);
+            // console.log(valor);
+            
             // count = 1;
             // este insert irá inserir os dados na tabela "medida"
             if (count == 1) {
@@ -83,16 +86,18 @@ const serial = async (
                     `INSERT INTO monitoramento (produtoDetectado, fkSensor) VALUES (?, 1)`,
                     [sensorDigital]
                 );
+                console.log(`valores inseridos no banco: ${sensorDigital}, no sensor: ${count}`);
                 count++
-                
-            } else {
+
+            }
+            else {
                 await poolBancoDados.execute(
-                    `INSERT INTO monitoramento (produtoDetectado, fkSensor) VALUES (?, ${count})`,
-                    [valor]
+                    `INSERT INTO monitoramento (produtoDetectado, fkSensor) VALUES (${valor}, ${count})`
+                    // [valor]
                 );
+                console.log(`valores inseridos no banco: ${valor}, no sensor: ${count}`);
                 count++
             }
-            console.log("valores inseridos no banco: " + " + sensorDigital, " + "no sensor: " + count);
 
             // count vai inserir na fk1, 2, 3, 4 até chegar em 192, quando chegar em 192 reseta, só ajustar isso pra fazer de forma aleatória ou assim mesmo, mas ai vocês diminuem o tempo que o senhor captura os dado, bota pra sei la 0.05 segundos cada captura que ai vai inserir em 20 sensores por segundo
         }
